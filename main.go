@@ -11,7 +11,9 @@ import (
 )
 
 func main() {
-	session, err := discordgo.New("Bot ODU0MzQ3NDI0NTAyNjQ0NzY3.GetNwr.-m7QrJjrhUrIZuDhU4J8fuYJf4KLGjZnmJqpwg")
+	token := os.Getenv("SQUIRE_TOKEN")
+	fmt.Println(token)
+	session, err := discordgo.New(fmt.Sprintf("Bot %s", token))
 	if err != nil {
 		log.Fatal(err)
 	}
