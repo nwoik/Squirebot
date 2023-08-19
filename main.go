@@ -5,10 +5,13 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
 )
+
+const prefix string = "£"
 
 func main() {
 	token := os.Getenv("SQUIRE_TOKEN")
@@ -18,6 +21,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	session.AddHandler(CommandHandler)
 	session.Identify.Intents = discordgo.IntentsAllWithoutPrivileged
 
 	err = session.Open()
@@ -34,10 +38,14 @@ func main() {
 	<-sc
 }
 
-// func WelcomeHandler(session *discordgo.Session, event *discordgo.GuildMemberAdd) {
-// 	guild, err := session.Guild(event.GuildID)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
+func CommandHandler(session *discordgo.Session, message *discordgo.MessageCreate) {
+	args := strings.Split(message.Content, " ")
 
-// }
+	if message.Author.ID == session.State.SessionID {
+		return
+	}
+
+	if args[0] != prefix {
+		return
+	}
+}
