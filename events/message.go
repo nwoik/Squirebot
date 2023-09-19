@@ -10,14 +10,21 @@ import (
 const prefix string = "£"
 
 func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate) {
-	args := strings.Split(message.Content, " ")
-	fmt.Println(message.ContentWithMentionsReplaced())
+
+	// fmt.Println(message.Author.Username, message.Content)
 
 	if message.Author.ID == session.State.SessionID {
 		return
 	}
 
-	if strings.Index(prefix, args[0]) == 0 {
-		session.ChannelMessageSend(message.ID, "This is a command response")
+	args := strings.Split(message.Content, " ")
+	fmt.Println(args)
+	if strings.Contains(args[0], prefix) {
+		command := strings.Trim(args[0], prefix)
+
+		if command == "ping" {
+			session.ChannelMessageSend(message.ChannelID, "pong")
+		}
+
 	}
 }
