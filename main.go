@@ -12,8 +12,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-const prefix string = "£"
-
 func main() {
 	token := os.Getenv("SQUIRE_TOKEN")
 	session, err := discordgo.New(fmt.Sprintf("Bot %s", token))
