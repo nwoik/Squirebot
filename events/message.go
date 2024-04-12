@@ -17,11 +17,8 @@ func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 		return
 	}
 
-	channel, err := session.Channel(message.ChannelID)
-
-	if err != nil {
-		log.Fatal(err)
-	}
+	channel, _ := session.Channel(message.ChannelID)
+	guild, _ := session.Guild(message.GuildID)
 
 	args := strings.Split(message.Content, " ")
 	if strings.Contains(args[0], prefix) {
@@ -36,6 +33,20 @@ func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 			}
 		}
 
+		if command == "guildinfo" {
+			embed := NewRichEmbed(guild.Name, "Server Info", 0x00bfff)
+
+			embed.SetThumbnail(guild.IconURL(""))
+
+			// embed.AddField("**Owner:**", , false)
+			embed.AddField("**Member Count:**", fmt.Sprint(len(guild.Members)), false)
+			embed.AddField("**Role Count:**", fmt.Sprint(len(guild.Roles)), false)
+			embed.AddField("**Booster Count:**", fmt.Sprint(guild.PremiumSubscriptionCount), false)
+			embed.SetFooter(fmt.Sprintf("Requested by %s", message.Author.Username), message.Author.AvatarURL(""))
+
+			session.ChannelMessageSendEmbed(channel.ID, embed.MessageEmbed)
+		}
+
 		if command == "kick" {
 			for _, member := range message.Mentions {
 				re, _ := regexp.Compile(`(\W\w+\s(.+\d+\W+)+)`)
@@ -46,8 +57,20 @@ func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 
 		if command == "ping" {
 			session.ChannelMessageSend(message.ChannelID, "pong")
+			log.Println(channel.Members)
+			log.Println(GetUserByID(guild, guild.OwnerID))
 			return
 		}
-
 	}
+}
+
+func GetUserByID(guild *discordgo.Guild, userID string) *discordgo.Member {
+	log.Println(guild.Members)
+	for _, v := range guild.Members {
+		log.Println(v)
+		// if v.User.ID == userID {
+		// 	return v
+		// }
+	}
+	return nil
 }
